@@ -35,3 +35,5 @@ DEFAULT_PAGINATION = 10
 #RELATIVE_URLS = True
 
 THEME = "attila"
+PLUGINS = ['pelican-plugins.render_math']
+STATIC_PATHS = ['media']
