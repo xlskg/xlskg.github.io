@@ -143,6 +143,73 @@
 <h3>Formula</h3>
 <div class="math">$$y_{1} = h(x_{l}) + \mathcal F(x_{l}, \mathcal W_{l}), $$</div>
 <div class="math">$$x_{l+1} = f(y_{1})$$</div>
+<ul>
+<li>xl and xl+1 are input and output of the l-th unit, </li>
+<li>F is a residualfunction. </li>
+<li>h(xl) = xl is an identity mapping </li>
+<li>f is a ReLU function</li>
+</ul>
+<h2>Compare with tranditional NN</h2>
+<table>
+<thead>
+<tr>
+<th>\</th>
+<th>Residual Network</th>
+<th>Tranditional NN</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Unraveled View</td>
+<td><img alt="image" src="/media/residual network.png"></td>
+<td><img alt="image" src="/media/tranditional NN.png"></td>
+</tr>
+<tr>
+<td>Formula</td>
+<td>
+<div class="math">\begin{aligned} y_{3} &amp;= y_{2} + f_{3}(y_{2})\\ &amp;=[y_{1} + f_{2}(y_{1})] + f_{3}(y_{1} + f_{2}(y_{1}))\\ &amp;=[y_{0} + f_{1}(y_{0}) + f_{2}(y_{0}+ f_{1}(y_{0}))] + f_{3}(y_{0} + f_{1}(y_{0}) + f_{2}(y_{0}+f_{1}(y_{0}))) \end{aligned}</div>
+</td>
+<td><span class="math">\(y_{3}^{FF} = f_{3}^{FF}(f_{2}^{FF}(f_{1}^{FF}(y_{0})))\)</span></td>
+</tr>
+<tr>
+<td>Feature</td>
+<td>have <strong>O(2n)</strong> implicit paths connecting input and output</td>
+<td><strong>ONE</strong> path</td>
+</tr>
+</tbody>
+</table>
+<h2>More important: Gradient</h2>
+<p>From <span class="math">\(x_{l+1} = x_{l} + \mathcal F(x_{l}, \mathcal W_{l})\)</span></p>
+<p>To <span class="math">\(x_{L} = x_{l} + \sum_{i=l}^{L-1} \mathcal F(x_{i}, \mathcal W_{i})\)</span></p>
+<ul>
+<li>The model is in a <strong>residual</strong> fashion between any units L and l. (where the name residual come from)</li>
+<li>The formula is summation instead of matrix-vector products</li>
+</ul>
+<p><strong>Gradient</strong>: </p>
+<div class="math">$$\frac {\partial \varepsilon}{\partial x_{l}} = \frac {\partial \varepsilon}{\partial x_{L}}\frac{\partial x_{L}}{\partial x_{l}} = \frac{\partial \varepsilon}{\partial x_{L}}(1+\frac{\partial}{\partial x_{l}} \sum_{i=l}^{L-1} \mathcal F(x_{i}, \mathcal W_{i}))$$</div>
+<ul>
+<li>Information is directly propagated back to any shallower unit l<span class="math">\(\frac {\partial \varepsilon}{\partial x_{L}\)</span></li>
+<li>General the <span class="math">\(\frac{\partial}{\partial x_{l}} \sum_{i=l}^{L-1} \mathcal F\)</span> cannot be always -1</li>
+</ul>
+<p>So, the gradient of a layer <strong>does not</strong> vanish even when the weights are arbitrarily small.</p>
+<h2>Various types of shortcut connections</h2>
+<p><img alt="image" src="/media/shortcut connections.png"></p>
+<h3>A simple modification</h3>
+<div class="math">$$ x_{l+1} = \lambda_{l}x_{l} + \mathcal F(x_{l}, \mathcal W_{l})$$</div>
+<div class="math">$$ x_{L} = (\prod_{i=l}^{L-1}\lambda_{i})x_{l} + \sum_{i=l}^{L-1}\hat{\mathcal F}(x_{i}, \mathcal W_{i})$$</div>
+<div class="math">$$ \frac {\partial \varepsilon}{\partial x_{l}} = \frac {\partial \varepsilon}{\partial x_{L}}((\prod_{i=l}^{L-1}\lambda_{i})+\frac{\partial}{\partial x_{l}}\sum_{i=L}^{L-1} \hat{\mathcal F}(x_{i}, \mathcal W_{i}))$$</div>
+<h2>Various types of activation function</h2>
+<p><img alt="image" src="/media/activation function.png"></p>
+<ul>
+<li>Short out completely</li>
+<li>BN for ease overfit</li>
+</ul>
+<h1>Reference</h1>
+<ul>
+<li><a href="/media/Deep_residual_learning_for_image_recognition_c2a0b.pdf">Deep_residual_learning_for_image_recognition_c2a0b.pdf</a></li>
+<li><a href="/media/Identity_Mappings_in_Deep_Residual_Networks_95817.pdf">Identity_Mappings_in_Deep_Residual_Networks_95817.pdf</a></li>
+<li><a href="/media/Residual_Networks_Behave_Like_Ensembles_of_Relatively_Shallow_Networks_13899.pdf">Residual_Networks_Behave_Like_Ensembles_of_Relatively_Shallow_Networks_13899.pdf</a></li>
+</ul>
 <script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
     var align = "center",
         indent = "0em",
