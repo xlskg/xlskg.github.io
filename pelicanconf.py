@@ -34,6 +34,7 @@ DEFAULT_PAGINATION = 10
 # Uncomment following line if you want document-relative URLs when developing
 #RELATIVE_URLS = True
 
-THEME = "pelican-clean-blog"
+THEME = "Flex"
 PLUGINS = ['pelican-plugins.render_math']
-STATIC_PATHS = ['media']
+STATIC_PATHS = ['media','static']
+CUSTOM_CSS = 'static/custom.css'

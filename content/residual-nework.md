@@ -1,32 +1,34 @@
-Title: First Article
+Title: Residual Network
 Date: 2019-03-18 16:00
 
-# Content
+# General
 ## How to analysis neural network abilities 
-From Two dimensions: 
-1. Representation Abilities. NN == RN
-2. Optimization. RN has stronger 
+From two aspects: 
 
-- Residual network has same representation ablitiy with tranditional neual netork. But RN is easiesr to optimize.  
-- Proposed residual network in [Identity_Mappings_in_Deep_Residual_Networks_95817.pdf](../media/Identity_Mappings_in_Deep_Residual_Networks_95817.pdf) has less representional ability than gating and 1x1 convolutional shortcuts.
+1. Representation Abilities. NN == RN
+2. Optimization. RN is easier to optimize
+
+Residual network has same representation ablitiy with tranditional neual netork.
+
+Proposed residual network in 
+[Identity_Mappings_in_Deep_Residual_Networks](../media/Identity_Mappings_in_Deep_Residual_Networks_95817.pdf) 
+has less representional ability than gating and 1x1 convolutional shortcuts. But it get better experimental result. We will discuss the formula below.
 
 ## Problem on traditional NN
 1. Deeper neural networks are more difficult(Accuracy/Efficiency) to train.
-2. With the network depth increasing, accuracy gets saturated and then degrades rapidly.
+2. With the network depth increasing, accuracy gets saturated and then degrades rapidly(vanishing gradient).
 
+# Detail
 ## Model Architecture
-|Original in [Deep_residual_learning_for_image_recognition_c2a0b.pdf](../media/Deep_residual_learning_for_image_recognition_c2a0b.pdf)|Proposed in [Identity_Mappings_in_Deep_Residual_Networks_95817.pdf](../media/Identity_Mappings_in_Deep_Residual_Networks_95817.pdf)|
+| Original in [Deep_residual_learning_for_image_recognition.pdf](../media/Deep_residual_learning_for_image_recognition_c2a0b.pdf)|Proposed in [Identity_Mappings_in_Deep_Residual_Networks.pdf](../media/Identity_Mappings_in_Deep_Residual_Networks_95817.pdf)|
 |---------------------------------------------------------|---------------------------------------|
 |![image]({static}/media/original_image.png)| ![image]({static}/media/full_pre.png)|
+| $$ y_{1} = x_{l} + \mathcal F(x_{l}, \mathcal W_{l}) $$ $$ x_{l+1} = relu(y_{1}) $$ | $$ y_{1} = x_{l} + \mathcal F(x_{l}, \mathcal W_{l}) $$ $$ x_{l+1} = y_{1} $$ |
 
 ### Formula
-$$y_{1} = h(x_{l}) + \mathcal F(x_{l}, \mathcal W_{l}), $$
-$$x_{l+1} = f(y_{1})$$
 
-- xl and xl+1 are input and output of the l-th unit, 
-- F is a residualfunction. 
-- h(xl) = xl is an identity mapping 
-- f is a ReLU function
+- $x_{l}$ and $x_{l}+1$ are input and output of the l-th unit, 
+- $\mathcal F$ is a residual function. Different residual network compose of various type of residual function. 
 
 ## Compare with tranditional NN
 | \ | Residual Network | Tranditional NN |
@@ -45,7 +47,7 @@ To $x_{L} = x_{l} + \sum_{i=l}^{L-1} \mathcal F(x_{i}, \mathcal W_{i})$
 
 **Gradient**: $$\frac {\partial \varepsilon}{\partial x_{l}} = \frac {\partial \varepsilon}{\partial x_{L}}\frac{\partial x_{L}}{\partial x_{l}} = \frac{\partial \varepsilon}{\partial x_{L}}(1+\frac{\partial}{\partial x_{l}} \sum_{i=l}^{L-1} \mathcal F(x_{i}, \mathcal W_{i}))$$
 
-- Information is directly propagated back to any shallower unit l$\frac {\partial \varepsilon}{\partial x_{L}$
+- Information is directly propagated back to any shallower unit l $\frac {\partial \varepsilon}{\partial x_{L}}$
 - General the $\frac{\partial}{\partial x_{l}} \sum_{i=l}^{L-1} \mathcal F$ cannot be always -1
 
 So, the gradient of a layer **does not** vanish even when the weights are arbitrarily small.
