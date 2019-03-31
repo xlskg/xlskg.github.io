@@ -1,0 +1,263 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="" />
+
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="/theme/stylesheet/style.min.css">
+
+  <link rel="stylesheet" type="text/css" href="/theme/pygments/github.min.css">
+  <link rel="stylesheet" type="text/css" href="/theme/font-awesome/css/font-awesome.min.css">
+
+    <link href="/static/custom.css" rel="stylesheet">
+
+
+
+
+
+
+<meta name="author" content="Zhuqian" />
+<meta name="description" content="Background Attention Attention is proposed in [1]. It fixes the issue: RNN encoder-decorder network need to compress all necessary information of a source sentence into a fixed-length vector. It is a new method to calculate distinct context value for each target tag. Encoder-Decorder framework Encoder Encoder read the input sentence …" />
+<meta name="keywords" content="">
+
+<meta property="og:site_name" content="Financer Knowledge Graph"/>
+<meta property="og:title" content="Attention"/>
+<meta property="og:description" content="Background Attention Attention is proposed in [1]. It fixes the issue: RNN encoder-decorder network need to compress all necessary information of a source sentence into a fixed-length vector. It is a new method to calculate distinct context value for each target tag. Encoder-Decorder framework Encoder Encoder read the input sentence …"/>
+<meta property="og:locale" content="en_US"/>
+<meta property="og:url" content="/attention.html"/>
+<meta property="og:type" content="article"/>
+<meta property="article:published_time" content="2019-03-30 00:00:00+08:00"/>
+<meta property="article:modified_time" content=""/>
+<meta property="article:author" content="/author/zhuqian.html">
+<meta property="article:section" content="misc"/>
+<meta property="og:image" content="">
+
+  <title>Financer Knowledge Graph &ndash; Attention</title>
+
+</head>
+<body>
+  <aside>
+    <div>
+      <a href="">
+        <img src="/theme/img/profile.png" alt="" title="">
+      </a>
+      <h1><a href=""></a></h1>
+
+
+      <nav>
+        <ul class="list">
+
+          <li><a href="http://getpelican.com/" target="_blank">Pelican</a></li>
+          <li><a href="http://python.org/" target="_blank">Python.org</a></li>
+          <li><a href="http://jinja.pocoo.org/" target="_blank">Jinja2</a></li>
+          <li><a href="#" target="_blank">You can modify those links in your config file</a></li>
+        </ul>
+      </nav>
+
+      <ul class="social">
+        <li><a class="sc-You can add links in your config file" href="#" target="_blank"><i class="fa fa-You can add links in your config file"></i></a></li>
+        <li><a class="sc-Another social link" href="#" target="_blank"><i class="fa fa-Another social link"></i></a></li>
+      </ul>
+    </div>
+
+
+  </aside>
+  <main>
+
+
+<article class="single">
+  <header>
+      
+    <h1 id="attention">Attention</h1>
+    <p>
+          Posted on 六 30 三月 2019 in <a href="/category/misc.html">misc</a>
+
+
+    </p>
+  </header>
+
+
+  <div>
+    <h1>Background</h1>
+<h2>Attention</h2>
+<p>Attention is proposed in [1]. </p>
+<p>It fixes the issue: RNN encoder-decorder network need to compress all necessary information of a source sentence into <strong>a fixed-length vector</strong>.</p>
+<p>It is a new method to calculate distinct context value for each target tag.</p>
+<h2>Encoder-Decorder framework</h2>
+<h3>Encoder</h3>
+<p><strong>Encoder</strong> read the input sentence: A sequence of vectors <span class="math">\(\mathbf{x} = (x_{1},...,x_{T_{x}})\)</span>, ouput a vector <span class="math">\(\mathbf{c}\)</span>
+</p>
+<div class="math">$$
+    h_{t} = f(x_{t},h_{t-1})\tag{1}
+$$</div>
+<div class="math">$$
+    \mathbf{c} = q({h_{1},...,h_{T_{x}}})\tag{2}
+$$</div>
+<p>Note:</p>
+<ol>
+<li>In (1), <span class="math">\(h_{t}\)</span> is only dependend on <span class="math">\(h_{t-1}\)</span> and <span class="math">\(x_{t}\)</span>, just same as language model. <span class="math">\(f\)</span> is some nonlinear function(eg. LSTM)</li>
+<li>In (2), <span class="math">\(\mathbf{c}\)</span> is a vector generated from the sequence of the hidden state. <span class="math">\(q\)</span> is some nonliner function. In RNN encoder-decoder model, <span class="math">\(q\)</span> = last element of hidden sequence. </li>
+</ol>
+<h3>Decoder</h3>
+<p><strong>Decoder</strong> predict the next word <span class="math">\(y_{t^\prime}\)</span> given:</p>
+<ol>
+<li>the context vector <span class="math">\(\mathbf{c}\)</span> </li>
+<li>all the previously predicted words <span class="math">\({y_1,...,y_{t^\prime-1}}\)</span></li>
+</ol>
+<p>In a concise mathematical language: the decoder defines a <strong>probability</strong> over the translation <span class="math">\(\mathbf{y}\)</span> by <strong>decomposing</strong> the joint probability into the ordered conditionals:</p>
+<div class="math">$$
+    p(\mathbf{y}) = \prod_{t=1}^{T}p(y_t|{y_1,...,y_{t-1}},\mathbf{c})\tag{3}
+$$</div>
+<p>In particluar, with an RNN:</p>
+<div class="math">$$
+    p(y_t|{y_1,...,y_{t-1},\mathbf{c}}) = g(y_{t-1},s_t,\mathbf{c})\tag{4}
+$$</div>
+<p>Some questiones: </p>
+<ol>
+<li>Is there any new <span class="math">\(q\)</span> function to calculate <strong>context</strong>. Can we get a new <span class="math">\(q\)</span> that is conditioned on a distinct context vector <span class="math">\(c_i\)</span> for each target <span class="math">\(y_i\)</span>? [1]</li>
+<li>Do we have an attention model that is independent with RNN? [2]</li>
+</ol>
+<h1>Detail</h1>
+<h2>Distinct Context <span class="math">\(c_i\)</span> for each target <span class="math">\(y_i\)</span></h2>
+<div class="math">$$
+    p(y_i|y_1,...,y_{i-1},\mathbf{x}) = g(y_{i-1},s_i,c_i)\tag{5}
+$$</div>
+<p>
+Where
+</p>
+<div class="math">$$
+    s_i = f(s_{i-1},y_{i-1},c_i)\tag{6}
+$$</div>
+<div class="math">$$
+    c_i = \sum_{j=1}^{T_x}a_{ij}h_j\tag{7}
+$$</div>
+<div class="math">$$
+    a_{ij} = \frac{\exp(e_{ij})}{\sum_{k=1}^{T_x}\exp(e_{ik})}
+$$</div>
+<div class="math">$$
+    e_{ij} = \alpha(s_{i-1},h_j)
+$$</div>
+<ul>
+<li><span class="math">\(\alpha\)</span> is a feedforward neural network</li>
+<li><span class="math">\(a_{ij}\)</span> is a probability that the target word <span class="math">\(y_i\)</span> is aligned to a source word <span class="math">\(x_j\)</span>. (soft alignment)</li>
+<li>i-th context vector <span class="math">\(c_i\)</span> is the expected annotation over all the annotation with probabilities <span class="math">\(a_{ij}\)</span></li>
+</ul>
+<h2>Context independent with RNN</h2>
+<h3>Self-Attention Vector</h3>
+<p><img alt="image" src="/media/transformer_self_attention_vectors.png"></p>
+<ul>
+<li>Query Vector: a vector to <strong>query</strong> another vecotor</li>
+<li>Key Vector: a vector to <strong>be queried</strong></li>
+<li>Value Vector: a vector of current word.</li>
+</ul>
+<div class="math">$$
+    q_1 = X_1 \times W^Q\\
+    k_1 = X_1 \times W^K\\
+    v_1 = X_1 \times W^V
+$$</div>
+<h3>Self-Attention Representation</h3>
+<p><img alt="image" src="/media/self-attention-output.png"></p>
+<p>A self-attention context-aware representation of word.</p>
+<h3>Multi-Head Self-Attention Representation</h3>
+<p><img alt="image" src="/media/transformer_multi-headed_self-attention-recap.png"></p>
+<h1>Reference</h1>
+<ol>
+<li><a href="https://arxiv.org/abs/1409.0473">Neural Machine Translation by Jointly Learning to Align and Translate</a></li>
+<li><a href="https://arxiv.org/abs/1706.03762">Attention is All you need</a> </li>
+<li><a href="https://jalammar.github.io/illustrated-transformer/">The Illustrated Transformer</a></li>
+</ol>
+<script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var align = "center",
+        indent = "0em",
+        linebreak = "false";
+
+    if (false) {
+        align = (screen.width < 768) ? "left" : align;
+        indent = (screen.width < 768) ? "0em" : indent;
+        linebreak = (screen.width < 768) ? 'true' : linebreak;
+    }
+
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.3/latest.js?config=TeX-AMS-MML_HTMLorMML';
+    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+</script>
+  </div>
+  <div class="tag-cloud">
+    <p>
+    </p>
+  </div>
+
+
+
+
+
+</article>
+
+    <footer>
+<p>&copy;  </p>
+<p>    Powered by <a href="http://getpelican.com" target="_blank">Pelican</a> - <a href="https://github.com/alexandrevicenzi/flex" target="_blank">Flex</a> theme by <a href="http://alexandrevicenzi.com" target="_blank">Alexandre Vicenzi</a>
+</p>    </footer>
+  </main>
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context" : "http://schema.org",
+  "@type" : "Blog",
+  "name": " Financer Knowledge Graph ",
+  "url" : "",
+  "image": "",
+  "description": ""
+}
+</script>
+
+</body>
+</html>
